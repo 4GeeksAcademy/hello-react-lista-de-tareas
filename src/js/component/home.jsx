@@ -1,21 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect} from 'react';
+
 
 function TodoList() {
-    //aca van todas las funcionalidades y la declaracion de los estados
-    // 1. declarar todos los estados juntos y de primero
+   
     const [tasks, setTasks] = useState([]);
     const [newTask, setNewTask] = useState('');
     const [hoverIndex, setHoverIndex] = useState(null);
-    // despues de los estados declaramos las funcionalidades, no importa el orden 
+     
+    function obtenerLista() {
+        fetch("https://playground.4geeks.com/apis/fake/todos/user/Carlos.Aparcedo")
+        .then((res) => res.json())
+        // .then((data) => console.log(data)) primero se hace esto para probar que informacion me trae y luego pasamos a la siguiente parte de como se llame el array.
+        .then((data) => setTasks(data))
+        .catch((error) => console.log(error))
+    }
 
-
-    const addTask = () => {
+    const addTask = () => { //agregar una nueva tarea 
         if (newTask !== '') {
-            setTasks([...tasks, newTask]);
+            let nuevoAr = tasks.concat({"done": false,"label": newTask}) 
+            setTasks(nuevoAr);
             setNewTask('');
         }
     };
-    const handleKeyDown = (event) => { //esta es la funcion presionar "enter"
+    const handleKeyDown = (event) => { 
         if (event.key === 'Enter') {
             addTask();
             event.preventDefault();
@@ -39,25 +46,22 @@ function TodoList() {
     };
 
     const isTaskEmpty = tasks.length === 0;
-    //aqui vamos a mostrar todo lo que se ve en el componente
 
-    //por una cuestion de buena practicas el useEffect se utiliza antes del return 
+    // cada vez que quiera ejecutar una funcion ni bien se cargue el componente debo hacer un useEffect, React dice esto va asi! siempre antes del return 
+    useEffect(()=>{
+        obtenerLista()
+    },[])
 
-    //la diferencia entre la linea 50 y la linea 52... 
-    //la 50 esta utilizando estilos en linea que no esta mal PERO se utiliza de ultima opcion
-    //la 52 esta utilizando propiedades de boostrap 
-
-    // style={{ maxWidth: '400px', margin: '0 auto', boxShadow: '0 4px 6px rgba(45, 0, 9, 3)', borderRadius: '25px', backgroundColor: '#ffe4c4' }}
     return (
             <div className="container d-flex position-absolute top-50 start-50 translate-middle flex-column col-4 my-3 mx-auto shadow-lg p-3 mb-5 bg-secondary rounded-4 " >
                 <h1 className="text-center mt-4">ToDo List</h1>
-                {/* aqui esta puesta */}
+                
                 <input type="text" value={newTask} onChange={e => setNewTask(e.target.value)} onKeyDown={handleKeyDown} placeholder="Que hay pa hoy...?" />
                 <button onClick={addTask} className="justify-content-end btn btn-primary mt-1">Agregalo ▼</button>
                 <ul className="list-group mt-3">
                     {tasks.map((task, index) => (
                         <li key={index} className="list-group-item d-flex justify-content-between align-items-center py-2" onMouseEnter={() => handleMouseEnter(index)} onMouseLeave={handleMouseLeave}>
-                            {task}
+                            {task.label}
                             <button onClick={() => removeTask(index)} className="btn bg-dark-subtle p-0" style={{ display: hoverIndex === index ? 'block' : 'none' }}>x</button>
                         </li>
                     ))}
