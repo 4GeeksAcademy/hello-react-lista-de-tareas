@@ -7,14 +7,6 @@ function TodoList() {
     const [newTask, setNewTask] = useState('');
     const [hoverIndex, setHoverIndex] = useState(null);
 
-    function obtenerLista() {
-        fetch("https://playground.4geeks.com/apis/fake/todos/user/Carlos.Aparcedo")
-            .then((res) => res.json())
-            // .then((data) => console.log(data)) primero se hace esto para probar que informacion me trae y luego pasamos a la siguiente parte de como se llame el array.
-            .then((data) => setTask(data)) //a la siguiente parte de como se llame el array(setTask)
-            .catch((error) => console.log(error))
-    };
-
     const addTask = () => { //agregar una nueva tarea 
         if (newTask !== '') {
             let nuevoAr = task.concat({ "done": false, "label": newTask })
@@ -47,10 +39,6 @@ function TodoList() {
 
     const isTaskEmpty = task.length === 0;
 
-    // cada vez que quiera ejecutar una funcion ni bien se cargue el componente debo hacer un useEffect, React dice esto va asi! siempre antes del return 
-    useEffect(() => {
-        obtenerLista()
-    }, [])
 
     return (
         <div className="container d-flex position-absolute top-50 start-50 translate-middle flex-column col-4 my-3 mx-auto shadow-lg p-3 mb-5 bg-secondary rounded-4 " >
